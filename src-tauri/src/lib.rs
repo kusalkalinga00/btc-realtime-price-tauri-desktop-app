@@ -1,7 +1,6 @@
 use tauri::{
     menu::{Menu, MenuItem},
-    tray::{MouseButton, MouseButtonState, TrayIconBuilder},
-    Emitter, Manager,
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder}, Manager,
 };
 use tauri_plugin_positioner::{Position, WindowExt};
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
@@ -49,6 +48,11 @@ pub fn run() {
                                 let _ = window.set_focus();
                             }
                         }
+                    }
+                })
+                .on_menu_event(|app , event|{
+                    if event.id() == "quit" {
+                        app.exit(0);
                     }
                 })
                 .build(app)?;
