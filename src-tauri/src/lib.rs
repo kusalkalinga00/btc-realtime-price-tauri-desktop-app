@@ -1,5 +1,7 @@
 use tauri::{
-    Emitter, Manager, menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder }
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder},
+    Emitter, Manager,
 };
 use tauri_plugin_positioner::{Position, WindowExt};
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
@@ -7,6 +9,7 @@ use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
@@ -23,18 +26,18 @@ pub fn run() {
             TrayIconBuilder::with_id("main")
                 .title("Click to open")
                 .menu(&menu)
-                .show_menu_on_left_click(false).on_tray_icon_event(|tray_handle, event| {
-                tauri_plugin_positioner::on_tray_event(tray_handle.app_handle(), &event);
+                .show_menu_on_left_click(false)
+                .on_tray_icon_event(|tray_handle, event| {
+                    tauri_plugin_positioner::on_tray_event(tray_handle.app_handle(), &event);
 
-
-                if let tauri::tray::TrayIconEvent::Click {
-                    button: MouseButton::Left,
-                    button_state: MouseButtonState::Up,
-                    ..
-                } = event
-                {
-                    let app = tray_handle.app_handle();
-                    if let Some(window) = app.get_webview_window("main") {
+                    if let tauri::tray::TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        let app = tray_handle.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
                             if window.is_visible().unwrap_or(false) {
                                 let _ = window.hide();
                             } else {
@@ -46,8 +49,8 @@ pub fn run() {
                                 let _ = window.set_focus();
                             }
                         }
-                }
-              })
+                    }
+                })
                 .build(app)?;
 
             Ok(())
