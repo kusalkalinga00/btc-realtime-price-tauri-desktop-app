@@ -1,24 +1,40 @@
 import "./App.css";
 import Main from "./view/Main";
+import { useQuery } from "@tanstack/react-query";
+import { IDate } from "./types";
+import { useEffect, useRef } from "react";
+import { TrayIcon } from "@tauri-apps/api/tray";
+import { truncateToTwoDecimalPlaces } from "./utils";
 
 function App() {
-  const data = {
-    symbol: "BTCUSDT",
-    priceChange: "-365.63000000",
-    priceChangePercent: "-0.538",
-    weightedAvgPrice: "67440.55613980",
-    openPrice: "67995.04000000",
-    highPrice: "68589.49000000",
-    lowPrice: "65998.05000000",
-    lastPrice: "67629.41000000",
-    volume: "22120.60567000",
-    quoteVolume: "1491825948.53411040",
-    openTime: 1774925880000,
-    closeTime: 1775012316705,
-    firstId: 6168757381,
-    lastId: 6173416588,
-    count: 4659208,
-  };
+  const tray = useRef<TrayIcon | null>(null);
+
+  const { data, isLoading, isError } = useQuery<IDate>({
+    queryKey: ["ticker", "BTCUSDT"],
+    queryFn: async () => {
+      const res = await fetch(
+        "https://data-api.binance.vision/api/v3/ticker?symbol=BTCUSDT",
+      );
+      return res.json();
+    },
+    refetchInterval: 2000,
+    refetchIntervalInBackground: true,
+  });
+
+  useEffect(() => {
+    if (data) {
+      (async () => {
+        if (!tray.current) {
+          tray.current = await TrayIcon.getById("main");
+        }
+        const title = `${truncateToTwoDecimalPlaces(data.lastPrice)} ${data.symbol}`;
+        await tray.current?.setTitle(title);
+      })();
+    }
+  }, [data]);
+
+  if (isLoading || !data) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching data</div>;
 
   return <Main data={data} />;
 }
