@@ -3,5 +3,17 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": ["main"],
-  "permissions": ["core:default", "opener:default", "positioner:default"]
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "positioner:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://data-api.binance.vision/*"
+        }
+      ]
+    }
+  ]
 }
