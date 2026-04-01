@@ -1,12 +1,8 @@
+import { IDate } from "../types";
 import { getPrecentageColor, truncateToTwoDecimalPlaces } from "../utils";
 
 interface MainProps {
-  data: {
-    symbol: string;
-    priceChange: string;
-    priceChangePercent: string;
-    lastPrice: string;
-  };
+  data: IDate;
 }
 
 const Main = ({ data }: MainProps) => {
@@ -18,7 +14,7 @@ const Main = ({ data }: MainProps) => {
     >
       <h1
         style={{
-          fontWeight: 300,
+          fontWeight: 400,
           fontSize: 22,
         }}
       >
@@ -26,12 +22,12 @@ const Main = ({ data }: MainProps) => {
       </h1>
       <h2
         style={{
-          fontWeight: 400,
+          fontWeight: 700,
           fontSize: 30,
           color: "#a2a3ff",
         }}
       >
-        $ {truncateToTwoDecimalPlaces(data.lastPrice)}
+        {truncateToTwoDecimalPlaces(data.lastPrice)}
       </h2>
 
       <div
